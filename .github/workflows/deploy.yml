@@ -64,7 +64,7 @@ jobs:
           done
 
       - name: Deploy to EC2
-        uses: appleboy/ssh-action@v1.0.3
+        uses: appleboy/ssh-action@v0.1.7
         with:
           host: ${{ secrets.EC2_HOST }}
           username: ${{ secrets.EC2_USER }}
@@ -72,19 +72,11 @@ jobs:
           script: |
             # Install Docker + Git
             sudo yum update -y
-            sudo yum install -y docker git
+            sudo yum install -y docker git docker-compose-plugin
 
             # Start Docker
             sudo systemctl start docker
             sudo usermod -aG docker ec2-user
-
-            # Install Docker Compose if missing
-            if ! command -v docker-compose &> /dev/null
-            then
-              sudo curl -L "https://github.com/docker/compose/releases/download/1.29.2/docker-compose-$(uname -s)-$(uname -m)" \
-                -o /usr/local/bin/docker-compose
-              sudo chmod +x /usr/local/bin/docker-compose
-            fi
 
             # Login to ECR
             aws ecr get-login-password --region ${{ env.AWS_REGION }} \
@@ -110,6 +102,6 @@ jobs:
           key: ${{ secrets.EC2_SSH_KEY }}
           script: |
             cd /home/ec2-user/app/microservices
-            docker-compose pull
-            docker-compose down
-            docker-compose up -d
+            docker compose pull
+            docker compose down
+            docker compose up -d
