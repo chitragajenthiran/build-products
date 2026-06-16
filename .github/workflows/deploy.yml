@@ -42,6 +42,15 @@ jobs:
             fi
           done
 
+      - name: Copy compose file
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ec2-user
+          key: ${{ secrets.EC2_SSH_KEY }}
+          source: "docker-compose.yml"
+          target: "/home/ec2-user/app/"
+
       - name: Build & Push Images
         run: |
           SERVICES=("eureka-service-registry" "taco-account-app" "taco-order-app")
@@ -61,29 +70,28 @@ jobs:
           username: ${{ secrets.EC2_USER }}
           key: ${{ secrets.EC2_SSH_KEY }}
           script: |
-            # Install Docker + Compose if missing
-            bash -s << 'EOF'
+            # Install Docker + Git
             sudo yum update -y
             sudo yum install -y docker git
-            sudo service docker start
+
+            # Start Docker
+            sudo systemctl start docker
             sudo usermod -aG docker ec2-user
 
+            # Install Docker Compose if missing
             if ! command -v docker-compose &> /dev/null
             then
               sudo curl -L "https://github.com/docker/compose/releases/download/1.29.2/docker-compose-$(uname -s)-$(uname -m)" \
                 -o /usr/local/bin/docker-compose
               sudo chmod +x /usr/local/bin/docker-compose
             fi
-            EOF
 
             # Login to ECR
             aws ecr get-login-password --region ${{ env.AWS_REGION }} \
               | docker login --username AWS --password-stdin ${{ steps.login-ecr.outputs.registry }}
 
-            # Copy compose file
+            # Prepare app folder
             mkdir -p /home/ec2-user/app
-            exit
-        continue-on-error: false
 
       - name: Upload docker-compose.yml to EC2
         uses: appleboy/scp-action@v0.1.7
@@ -103,4 +111,5 @@ jobs:
           script: |
             cd /home/ec2-user/app
             docker-compose pull
+            docker-compose down
             docker-compose up -d
