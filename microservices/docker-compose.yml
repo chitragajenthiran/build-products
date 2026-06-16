@@ -2,7 +2,7 @@ version: '3.8'
 
 services:
   eureka:
-    image: <AWS_ACCOUNT_ID>.dkr.ecr.eu-west-1.amazonaws.com/eureka-service-registry:latest
+    image: ${AWS_ACCOUNT_ID}.dkr.ecr.eu-west-1.amazonaws.com/eureka-service-registry:latest
     ports:
       - "8761:8761"
     environment:
@@ -15,7 +15,7 @@ services:
       retries: 5
 
   taco-account:
-    image: <AWS_ACCOUNT_ID>.dkr.ecr.eu-west-1.amazonaws.com/taco-account-app:latest
+    image: ${AWS_ACCOUNT_ID}.dkr.ecr.eu-west-1.amazonaws.com/taco-account-app:latest
     ports:
       - "8081:8081"
     environment:
@@ -28,7 +28,7 @@ services:
         condition: service_healthy
 
   taco-order:
-    image: <AWS_ACCOUNT_ID>.dkr.ecr.eu-west-1.amazonaws.com/taco-order-app:latest
+    image: ${AWS_ACCOUNT_ID}.dkr.ecr.eu-west-1.amazonaws.com/taco-order-app:latest
     ports:
       - "8082:8082"
     environment:
