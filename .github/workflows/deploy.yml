@@ -103,7 +103,7 @@ jobs:
           target: "/home/ec2-user/app"
 
       - name: Start Services on EC2
-        uses: appleboy/ssh-action@v1
+        uses: appleboy/ssh-action@v0.1.7
         with:
           host: ${{ secrets.EC2_HOST }}
           username: ${{ secrets.EC2_USER }}
