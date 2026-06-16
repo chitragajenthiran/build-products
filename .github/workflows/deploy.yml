@@ -103,13 +103,13 @@ jobs:
           target: "/home/ec2-user/app"
 
       - name: Start Services on EC2
-        uses: appleboy/ssh-action@v1.0.3
+        uses: appleboy/ssh-action@v1
         with:
           host: ${{ secrets.EC2_HOST }}
           username: ${{ secrets.EC2_USER }}
           key: ${{ secrets.EC2_SSH_KEY }}
           script: |
-            cd /home/ec2-user/app
+            cd /home/ec2-user/app/microservices
             docker-compose pull
             docker-compose down
             docker-compose up -d
