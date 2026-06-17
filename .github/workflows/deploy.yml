@@ -8,6 +8,7 @@ on:
 
 env:
   AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
+  DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
   AWS_REGION: eu-west-1
 
 jobs:
